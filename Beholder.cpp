@@ -19,17 +19,10 @@
  * Copyright (C) 2011 Artem Golubev
  */
 
-#include <Windows.h>
-#include "LIRCDefines.h"
-#include <stdio.h>
-#include "Globals.h"
 #include "Beholder.h"
-#include <tchar.h>
-#include "resource.h"
 
-IG_API int init(HANDLE exitEvent) {
-
-
+IG_API int init(HANDLE exitEvent)
+{
 	sendReceiveData = new SendReceiveData();
 	if(!sendReceiveData->init())
       return 0;
@@ -40,8 +33,8 @@ IG_API int init(HANDLE exitEvent) {
 	return 1;
 }
 
-IG_API void deinit() {
-
+IG_API void deinit()
+{
 	if(sendReceiveData) {
 		sendReceiveData->deinit();
 		delete sendReceiveData;
@@ -54,29 +47,27 @@ IG_API void deinit() {
 	}
 
 	threadExitEvent = NULL;
-
 }
 
-IG_API int hasGui() {
-
+IG_API int hasGui()
+{
 	return FALSE;
 }
 
-IG_API void	loadSetupGui() {
-
+IG_API void	loadSetupGui()
+{
+   // @TODO
 }
 
-IG_API int sendIR(struct ir_remote *remote, struct ir_ncode *code, int repeats) {
-
+IG_API int sendIR(struct ir_remote *remote, struct ir_ncode *code, int repeats)
+{
 	return 0;
 }
 
-IG_API int decodeIR(struct ir_remote *remotes, TCHAR *out) {
-
+IG_API int decodeIR(struct ir_remote *remotes, TCHAR *out)
+{
 	if(sendReceiveData) {
-
 		sendReceiveData->waitTillDataIsReady(0);
-
 		return sendReceiveData->decodeCommand(out);
 	}
 
