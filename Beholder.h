@@ -31,12 +31,12 @@
 extern "C" {
 #endif
 
-IG_API int	init		(HANDLE exitEvent);
-IG_API void	deinit		();
-IG_API int	hasGui		();
+IG_API int	init(HANDLE exitEvent);
+IG_API void	deinit();
+IG_API int	hasGui();
 IG_API void	loadSetupGui();
-IG_API int	sendIR		(struct ir_remote *remote, struct ir_ncode *code, int repeats);
-IG_API int	decodeIR	(struct ir_remote *remotes, TCHAR *out);
+IG_API int	sendIR(struct ir_remote *remote, struct ir_ncode *code, int repeats);
+IG_API int	decodeIR(struct ir_remote *remotes, TCHAR *out);
 
 #ifdef __cplusplus
 }
