@@ -21,14 +21,14 @@
 
 #include "Beholder.h"
 
-IG_API int init(HANDLE exitEvent)
+IG_API int init( HANDLE exitEvent )
 {
 	sendReceiveData = new SendReceiveData();
-	if(!sendReceiveData->init())
+	if( !sendReceiveData->init() )
       return 0;
 
 	threadExitEvent = exitEvent;
-	dataReadyEvent	= CreateEvent(NULL,FALSE,FALSE,NULL);
+	dataReadyEvent	= CreateEvent( NULL, FALSE, FALSE, NULL );
 
 	return 1;
 }
@@ -42,7 +42,7 @@ IG_API void deinit()
 	}
 
 	if(dataReadyEvent) {
-		CloseHandle(dataReadyEvent);
+		CloseHandle( dataReadyEvent );
 		dataReadyEvent = NULL;
 	}
 
@@ -59,16 +59,16 @@ IG_API void	loadSetupGui()
    // @TODO
 }
 
-IG_API int sendIR(struct ir_remote *remote, struct ir_ncode *code, int repeats)
+IG_API int sendIR( struct ir_remote *remote, struct ir_ncode *code, int repeats )
 {
 	return 0;
 }
 
-IG_API int decodeIR(struct ir_remote *remotes, TCHAR *out)
+IG_API int decodeIR( struct ir_remote *remotes, TCHAR *out )
 {
 	if(sendReceiveData) {
-		sendReceiveData->waitTillDataIsReady(0);
-		return sendReceiveData->decodeCommand(out);
+		sendReceiveData->waitTillDataIsReady( 0 );
+	   return sendReceiveData->decodeCommand( out );
 	}
 
 	return 0;
