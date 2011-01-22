@@ -21,25 +21,9 @@
 
 #include <Windows.h>
 #include "Globals.h"
-#include <stdio.h>
 #include "LircDefines.h"
 
-
-HANDLE	threadExitEvent	= NULL;
-HANDLE	dataReadyEvent	= NULL;
+HANDLE threadExitEvent = NULL;
+HANDLE dataReadyEvent  = NULL;
 
 SendReceiveData *sendReceiveData = NULL;
-
-int gettimeofday(struct mytimeval *a, void *)
-/* only accurate to milliseconds, instead of microseconds */
-{
-	struct _timeb tstruct;
-	errno_t err = _ftime64_s(&tstruct);
-   if( err )
-	   return err;
-
-	a->tv_sec=tstruct.time;
-	a->tv_usec=tstruct.millitm*1000;
-
-	return 1;
-}

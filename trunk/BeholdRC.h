@@ -13,18 +13,20 @@
 
 #pragma once
 
-
-
+#ifdef __cplusplus
 extern "C" {
+#endif
+
   int   BTV_GetIStatus  (void);	// Get interface status: 0 - Library not loaded, 1 - WDM device not selected, 2 - OK.
   BOOL  BTV_SelectCard  (int idx=0);	// Select Beholder WDM device.
   int   BTV_GetRCCode   (void);	// Get remote control key code, short format. Works only with native remote control.
 				// Returns -1 if no key pressed. Otherwise returns one byte key code.
   ULONG BTV_GetRCCodeEx (void);	// Get remote control key code, long format. Returns code for any remote control supported by hardware.
 				// Returns 0 if no key pressed. Otherwise returns four bytes key code.
+
+#ifdef __cplusplus
 }
-
-
+#endif
 
 /////////////////////////////////////////////////////////////////////////////
 //
