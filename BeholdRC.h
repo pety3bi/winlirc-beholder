@@ -8,6 +8,9 @@
 #ifndef __BEHOLDRC_H
 #define __BEHOLDRC_H
 
+#include "windows.h"
+#include <tchar.h>
+
 #pragma once
 
 

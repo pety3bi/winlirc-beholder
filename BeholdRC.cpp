@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "BeholdRC.h"
 
 #ifdef _DEBUG
@@ -36,9 +35,9 @@ public:
 
 BeholdRC::BeholdRC() {
   init = false;
-  hLib = LoadLibrary ("BeholdRC.dll");
+  hLib = LoadLibrary( _T( "BeholdRC.dll" ) );
   if ( hLib ) {
-    pGetCardCount    = (GETCARDCOUNT*)    GetProcAddress (hLib, "GetCardCount");
+    pGetCardCount    = (GETCARDCOUNT*)    GetProcAddress (hLib, "GetCardCount" );
     pOpenCard        = (OPENCARD*)        GetProcAddress (hLib, "OpenCard");
     pGetRemoteCode   = (GETREMOTECODE*)   GetProcAddress (hLib, "GetRemoteCode");
     pGetRemoteCodeEx = (GETREMOTECODEEX*) GetProcAddress (hLib, "GetRemoteCodeEx");
