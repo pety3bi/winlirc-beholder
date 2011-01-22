@@ -22,8 +22,7 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
-#include <Windows.h>
-#include <sys/timeb.h>
+#include <windows.h>
 #include "SendReceiveData.h"
 
 extern HANDLE threadExitEvent;

@@ -22,6 +22,14 @@
 #ifndef BEHOLDRC_H
 #define BEHOLDRC_H
 
+#include <windows.h>
+#include <tchar.h>
+
+#include "resource.h"
+
+#include "LIRCDefines.h"
+#include "Globals.h"
+
 //
 // TIRA API
 //

@@ -19,11 +19,8 @@
  * Copyright (C) 2011 Artem Golubev
  */
 
-#include <windows.h>
-#include "SendReceiveData.h"
 #include "Globals.h"
-#include <stdio.h>
-#include <tchar.h>
+#include "SendReceiveData.h"
 
 DWORD WINAPI BeholdRC(void *recieveClass) {
 

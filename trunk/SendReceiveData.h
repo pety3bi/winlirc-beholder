@@ -22,6 +22,10 @@
 #ifndef RECEIVEDATA_H
 #define RECEIVEDATA_H
 
+#include <windows.h>
+#include <tchar.h>
+#include <cstdio>
+
 #include "LIRCDefines.h"
 
 #include "BeholdRC.h"
