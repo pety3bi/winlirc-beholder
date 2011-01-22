@@ -42,11 +42,12 @@ public:
 	void   waitTillDataIsReady( int maxUSecs );
 	void   threadProc();
 
-   void   getCode();
-	int    decodeCommand( TCHAR *out );
+   int    decodeCommand( TCHAR *out );
 
 private:
 	void   killThread();
+
+   void   getCode(); // @TODO
 
    ULONG  irCode;
    ULONG  irLastCode;
