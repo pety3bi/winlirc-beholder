@@ -101,11 +101,7 @@ void SendReceiveData::threadProc() {
 
 		if(result==(WAIT_OBJECT_0)) 
 		{
-         ULONG code = 0;
-         code = BTV_GetRCCodeEx();
-         
-		   irCode = code;
-         
+		   irCode = BTV_GetRCCodeEx();
          if( irCode == irLastCode )
             if( repeats >= 9)
                repeats++;
@@ -114,7 +110,7 @@ void SendReceiveData::threadProc() {
          else
             repeats = 0;
 
-         if( code ) {
+         if( irCode ) {
             SetEvent(dataReadyEvent);
          }
 
