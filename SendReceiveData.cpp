@@ -117,7 +117,6 @@ void SendReceiveData::threadProc() {
             repeats = 0;
 
          if( code ) {
-            //printf( "%x" , code )
             SetEvent(dataReadyEvent);
          }
 
@@ -128,7 +127,7 @@ void SendReceiveData::threadProc() {
 
 		if(result==(WAIT_OBJECT_0+1))
 		{
-			//printf("leaving thread \n");
+			// leaving thread
 			break;
 		}
 	}
@@ -202,186 +201,185 @@ void SendReceiveData::waitTillDataIsReady(int maxUSecs) {
 
 }
 
-int SendReceiveData::decodeCommand(char *out) {
+int SendReceiveData::decodeCommand(TCHAR *out) {
 
 	//==================
-	char buttonName[32];
-   char remoteName[32];
+	TCHAR buttonName[32];
+   TCHAR remoteName[32];
 	//==================
 
-   memset(&buttonName,0,sizeof(char)*32);
-   memset(&remoteName,0,sizeof(char)*32);
+   memset( &buttonName, 0, sizeof(TCHAR)*32 );
+   memset( &remoteName, 0, sizeof(TCHAR)*32 );
 
-	switch(irCode) {
+	switch( irCode ) {
       case 0:
          irCode = 0;
          return 0;
 
       // BEGIN AverMedia 407
       case 0x2FD00FF:
-         strcpy_s(remoteName,_countof(remoteName),"AverMedia");
-         strcpy_s(buttonName,_countof(buttonName),"POWER");
+         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
+         _tcscpy_s( buttonName, _countof(buttonName), _T( "POWER" ) );
          break;
 
       case 0x2FD01FE:
-         strcpy_s(remoteName,_countof(remoteName),"AverMedia");
-         strcpy_s(buttonName,_countof(buttonName),"TV/FM");
+         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
+         _tcscpy_s( buttonName, _countof(buttonName), _T( "TV/FM" ) );
          break;
       case 0x2FD02FD:
-         strcpy_s(remoteName,_countof(remoteName),"AverMedia");
-         strcpy_s(buttonName,_countof(buttonName),"CD");
+         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
+         _tcscpy_s( buttonName, _countof(buttonName), _T( "CD" ) );
          break;
       case 0x2FD03FC:
-         strcpy_s(remoteName,_countof(remoteName),"AverMedia");
-         strcpy_s(buttonName,_countof(buttonName),"TELETEXT");
+         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
+         _tcscpy_s( buttonName, _countof(buttonName), _T( "TELETEXT" ) );
          break;
 
       case 50136570:
-         strcpy_s(remoteName,_countof(remoteName),"AverMedia");
-         strcpy_s(buttonName,_countof(buttonName),"1");
+         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
+         _tcscpy_s( buttonName, _countof(buttonName), _T( "1 ") );
          break;
       case 50136825:
-         strcpy_s(remoteName,_countof(remoteName),"AverMedia");
-         strcpy_s(buttonName,_countof(buttonName),"2");
+         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
+         _tcscpy_s( buttonName, _countof(buttonName), _T( "2" ) );
          break;
       case 50137080:
-         strcpy_s(remoteName,_countof(remoteName),"AverMedia");
-         strcpy_s(buttonName,_countof(buttonName),"3");
+         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
+         _tcscpy_s( buttonName, _countof(buttonName), _T( "3" ) );
          break;
       case 50137590:
-         strcpy_s(remoteName,_countof(remoteName),"AverMedia");
-         strcpy_s(buttonName,_countof(buttonName),"4");
+         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
+         _tcscpy_s( buttonName, _countof(buttonName), _T( "4" ) );
          break;
       case 50137845:
-         strcpy_s(remoteName,_countof(remoteName),"AverMedia");
-         strcpy_s(buttonName,_countof(buttonName),"5");
+         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
+         _tcscpy_s( buttonName, _countof(buttonName), _T( "5" ) );
          break;
       case 50138100:
-         strcpy_s(remoteName,_countof(remoteName),"AverMedia");
-         strcpy_s(buttonName,_countof(buttonName),"6");
+         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
+         _tcscpy_s( buttonName, _countof(buttonName), _T( "6" ) );
          break;
       case 50138610:
-         strcpy_s(remoteName,_countof(remoteName),"AverMedia");
-         strcpy_s(buttonName,_countof(buttonName),"7");
+         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
+         _tcscpy_s( buttonName, _countof(buttonName), _T( "7" ) );
          break;
       case 50138865:
-         strcpy_s(remoteName,_countof(remoteName),"AverMedia");
-         strcpy_s(buttonName,_countof(buttonName),"8");
+         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
+         _tcscpy_s( buttonName, _countof(buttonName), _T( "8" ) );
          break;
       case 50139120:
-         strcpy_s(remoteName,_countof(remoteName),"AverMedia");
-         strcpy_s(buttonName,_countof(buttonName),"9");
+         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
+         _tcscpy_s( buttonName, _countof(buttonName), _T( "9" ) );
          break;
       case 50139630:
-         strcpy_s(remoteName,_countof(remoteName),"AverMedia");
-         strcpy_s(buttonName,_countof(buttonName),"0");
+         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
+         _tcscpy_s( buttonName, _countof(buttonName), _T( "0" ) );
          break;
 
       case 50136315:
-         strcpy_s(remoteName,_countof(remoteName),"AverMedia");
-         strcpy_s(buttonName,_countof(buttonName),"VIDEO");
+         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
+         _tcscpy_s( buttonName, _countof(buttonName), _T( "VIDEO" ) );
          break;
       case 50137335:
-         strcpy_s(remoteName,_countof(remoteName),"AverMedia");
-         strcpy_s(buttonName,_countof(buttonName),"AUDIO");
+         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
+         _tcscpy_s( buttonName, _countof(buttonName), _T( "AUDIO" ) );
          break;
       case 50138355:
-         strcpy_s(remoteName,_countof(remoteName),"AverMedia");
-         strcpy_s(buttonName,_countof(buttonName),"SCREEN");
+         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
+         _tcscpy_s( buttonName, _countof(buttonName), _T( "SCREEN" ) );
          break;
 
       case 50139885:
-         strcpy_s(remoteName,_countof(remoteName),"AverMedia");
-         strcpy_s(buttonName,_countof(buttonName),"DISPLAY");
+         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
+         _tcscpy_s( buttonName, _countof(buttonName), _T( "DISPLAY" ) );
          break;
       case 50140140:
-         strcpy_s(remoteName,_countof(remoteName),"AverMedia");
-         strcpy_s(buttonName,_countof(buttonName),"LOOP");
+         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
+         _tcscpy_s( buttonName, _countof(buttonName), _T( "LOOP" ) );
          break;
       case 50139375:
-         strcpy_s(remoteName,_countof(remoteName),"AverMedia");
-         strcpy_s(buttonName,_countof(buttonName),"PREVIEW");
+         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
+         _tcscpy_s( buttonName, _countof(buttonName), _T( "PREVIEW" ) );
          break;
       case 50140650:
-         strcpy_s(remoteName,_countof(remoteName),"AverMedia");
-         strcpy_s(buttonName,_countof(buttonName),"AUTOSCAN");
+         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
+         _tcscpy_s( buttonName, _countof(buttonName), _T( "AUTOSCAN" ) );
          break;
       case 50140905:
-         strcpy_s(remoteName,_countof(remoteName),"AverMedia");
-         strcpy_s(buttonName,_countof(buttonName),"FREEZE");
+         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
+         _tcscpy_s( buttonName, _countof(buttonName), _T( "FREEZE" ) );
          break;
       case 50141160:
-         strcpy_s(remoteName,_countof(remoteName),"AverMedia");
-         strcpy_s(buttonName,_countof(buttonName),"CAPTURE");
+         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
+         _tcscpy_s( buttonName, _countof(buttonName), _T( "CAPTURE" ) );
          break;
       case 50140395:
-         strcpy_s(remoteName,_countof(remoteName),"AverMedia");
-         strcpy_s(buttonName,_countof(buttonName),"MUTE");
+         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
+         _tcscpy_s( buttonName, _countof(buttonName), _T( "MUTE" ) );
          break;
       case 50141670:
-         strcpy_s(remoteName,_countof(remoteName),"AverMedia");
-         strcpy_s(buttonName,_countof(buttonName),"RECORD");
+         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
+         _tcscpy_s( buttonName, _countof(buttonName), _T( "RECORD" ) );
          break;
       case 50141925:
-         strcpy_s(remoteName,_countof(remoteName),"AverMedia");
-         strcpy_s(buttonName,_countof(buttonName),"PAUSE");
+         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
+         _tcscpy_s( buttonName, _countof(buttonName), _T( "PAUSE" ) );
          break;
       case 50142180:
-         strcpy_s(remoteName,_countof(remoteName),"AverMedia");
-         strcpy_s(buttonName,_countof(buttonName),"STOP");
+         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
+         _tcscpy_s( buttonName, _countof(buttonName), _T( "STOP" ) );
          break;
       case 50141415:
-         strcpy_s(remoteName,_countof(remoteName),"AverMedia");
-         strcpy_s(buttonName,_countof(buttonName),"PLAY");
+         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
+         _tcscpy_s( buttonName, _countof(buttonName), _T( "PLAY" ) );
          break;
 
       case 0x2FD1EE1:
-         strcpy_s(remoteName,_countof(remoteName),"AverMedia");
-         strcpy_s(buttonName,_countof(buttonName),"VOL_DOWN");
+         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
+         _tcscpy_s( buttonName, _countof(buttonName), _T( "VOL_DOWN" ) );
          break;
 
       case 0x2FD1FE0:
-         strcpy_s(remoteName,_countof(remoteName),"AverMedia");
-         strcpy_s(buttonName,_countof(buttonName),"VOL_UP");
+         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
+         _tcscpy_s( buttonName, _countof(buttonName), _T( "VOL_UP" ) );
          break;
 
       case 0x3FC02FD:
-         strcpy_s(remoteName,_countof(remoteName),"AverMedia");
-         strcpy_s(buttonName,_countof(buttonName),"CHANNEL_DOWN");
+         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
+         _tcscpy_s( buttonName, _countof(buttonName), _T( "CHANNEL_DOWN" ) );
          break;
       case 0x3FC03FC:
-         strcpy_s(remoteName,_countof(remoteName),"AverMedia");
-         strcpy_s(buttonName,_countof(buttonName),"CHANNEL_UP");
+         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
+         _tcscpy_s( buttonName, _countof(buttonName), _T( "CHANNEL_UP" ) );
          break;
 
       case 50142690:
-         strcpy_s(remoteName,_countof(remoteName),"AverMedia");
-         strcpy_s(buttonName,_countof(buttonName),"RED");
+         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
+         _tcscpy_s( buttonName, _countof(buttonName), _T( "RED" ) );
          break;
       case 50142435:
-         strcpy_s(remoteName,_countof(remoteName),"AverMedia");
-         strcpy_s(buttonName,_countof(buttonName),"YELLOW");
+         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
+         _tcscpy_s( buttonName, _countof(buttonName), _T( "YELLOW" ) );
          break;
       case 66847230:
-         strcpy_s(remoteName,_countof(remoteName),"AverMedia");
-         strcpy_s(buttonName,_countof(buttonName),"GREEN");
+         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
+         _tcscpy_s( buttonName, _countof(buttonName), _T( "GREEN" ) );
          break;
       case 66846975:
-         strcpy_s(remoteName,_countof(remoteName),"AverMedia");
-         strcpy_s(buttonName,_countof(buttonName),"BLUE");
+         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
+         _tcscpy_s( buttonName, _countof(buttonName), _T( "BLUE" ) );
          break;
 
       // END AverMedia 407
 	}
 
    if( buttonName[0] == 0 )
-      _snprintf_s(buttonName,_countof(buttonName),"0x%X", irCode);
+      _snprintf_s( buttonName, _countof(buttonName), _T( "0x%X" ), irCode );
 
    if( remoteName[0] == 0 )
-      strcpy_s(remoteName,_countof(remoteName),"Unknown");
+      _tcscpy_s( remoteName, _countof(remoteName), _T( "Unknown" ) );
    
-   //_snprintf_s(out, PACKET_SIZE+1, PACKET_SIZE+1, "%016llx %02x %s %s\n", irCode, repeats, "", buttonName);
-   _snprintf_s(out, PACKET_SIZE+1, PACKET_SIZE+1, "%016llx %02x %s %s\n", __int64(0), repeats, buttonName, remoteName);
+   _sntprintf_s( out, PACKET_SIZE+1, PACKET_SIZE+1, _T( "%016llx %02x %s %s\n" ), __int64(0), repeats, buttonName, remoteName );
 	
    irLastCode	= irCode;
    irCode = 0;

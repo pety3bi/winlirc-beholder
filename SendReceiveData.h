@@ -36,7 +36,7 @@ public:
 
 	void	waitTillDataIsReady(int maxUSecs);
 	void	threadProc();
-	int	decodeCommand(char *out);
+	int	decodeCommand(TCHAR *out);
 
    ULONG irCode;
    ULONG irLastCode;
