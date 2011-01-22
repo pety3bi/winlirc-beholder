@@ -73,6 +73,7 @@ BOOL SendReceiveData::init() {
       }
    }
 
+   MessageBox( 0, _T( "Error selecting card" ), _T( "Beholder" ), MB_OK | MB_ICONERROR );
    return false;
 }
 
