@@ -71,7 +71,7 @@ IG_API int sendIR(struct ir_remote *remote, struct ir_ncode *code, int repeats) 
 	return 0;
 }
 
-IG_API int decodeIR(struct ir_remote *remotes, char *out) {
+IG_API int decodeIR(struct ir_remote *remotes, TCHAR *out) {
 
 	if(sendReceiveData) {
 
