@@ -34,25 +34,26 @@ class SendReceiveData
 {
 public:
 	SendReceiveData();
+   ~SendReceiveData();
 
-	BOOL	init();
-	void	deinit();
+	BOOL   init();
+	void   deinit();
 
-	void	waitTillDataIsReady(int maxUSecs);
-	void	threadProc();
-	int	decodeCommand(TCHAR *out);
+	void   waitTillDataIsReady( int maxUSecs );
+	void   threadProc();
 
-   ULONG irCode;
-   ULONG irLastCode;
-	UINT	repeats;
-	
+   void   getCode();
+	int    decodeCommand( TCHAR *out );
+
 private:
-	void	killThread();
+	void   killThread();
 
-	HANDLE	threadHandle;
-	HANDLE	exitEvent;
-
-   HANDLE	beginEvent;
+   ULONG  irCode;
+   ULONG  irLastCode;
+	UINT   repeats;
+	
+   HANDLE threadHandle;
+	HANDLE exitEvent;
 };
 
 #endif

@@ -22,25 +22,32 @@
 #include "Globals.h"
 #include "SendReceiveData.h"
 
-DWORD WINAPI BeholdRC(void *recieveClass) {
-
+DWORD WINAPI BeholdRC(void *recieveClass)
+{
    ((SendReceiveData*)recieveClass)->threadProc();
    return 0;
 }
 
-SendReceiveData::SendReceiveData() {
-
-   threadHandle	= NULL;
-   beginEvent     = NULL;
-   exitEvent		= NULL;
+SendReceiveData::SendReceiveData() :
+   irCode(),
+   irLastCode(),
+   repeats(),
+   threadHandle(),
+   exitEvent()
+{
 }
 
 
-BOOL SendReceiveData::init() {
+SendReceiveData::~SendReceiveData()
+{
+}
+
+
+BOOL SendReceiveData::init()
+{
    irCode			= 0;
    irLastCode		= 0;
    repeats			= 0;
-
 
    if( !BTV_GetIStatus() ) {
       MessageBox( 0, _T( "Library not found" ), _T( "Beholder" ), MB_OK | MB_ICONERROR );
@@ -67,8 +74,8 @@ BOOL SendReceiveData::init() {
    */
 
    if( BTV_SelectCard() ) {
-      threadHandle = CreateThread(NULL,0,BeholdRC,(void *)this,0,NULL);
-      if(threadHandle) {
+      threadHandle = CreateThread( NULL, 0, BeholdRC, (void *)this, 0, NULL );
+      if( threadHandle ) {
          return true;
       }
    }
@@ -77,125 +84,109 @@ BOOL SendReceiveData::init() {
    return false;
 }
 
-void SendReceiveData::deinit() {
-
+void SendReceiveData::deinit()
+{
    killThread();
 }
 
 
-void SendReceiveData::threadProc() {
+void SendReceiveData::threadProc()
+{
+	exitEvent = CreateEvent( NULL, TRUE, FALSE, NULL );
+   if( !exitEvent )
+      return;
 
-	HANDLE     events[2];
-	DWORD      result = 0;
+   DWORD result = 0;
 
-   beginEvent = CreateEvent(NULL,FALSE,TRUE,NULL);
-	exitEvent = CreateEvent(NULL,TRUE,FALSE,NULL);
+	while( TRUE ) {
+      this->getCode();
 
-	events[0] = beginEvent;
-	events[1] = exitEvent;
-
-   //SetEvent(beginEvent);
-
-	while(1) {
-		result = WaitForMultipleObjects(2,events,FALSE,INFINITE);
-
-		if(result==(WAIT_OBJECT_0)) 
-		{
-		   irCode = BTV_GetRCCodeEx();
-         if( irCode == irLastCode )
-            if( repeats >= 9)
-               repeats++;
-            else
-               repeats = 0;
-         else
-            repeats = 0;
-
-         if( irCode ) {
-            SetEvent(dataReadyEvent);
-         }
-
-         Sleep( 250 );
-
-         SetEvent(beginEvent);
-		}
-
-		if(result==(WAIT_OBJECT_0+1))
-		{
+      //result = WaitForMultipleObjects( 2, events, FALSE, INFINITE );
+      result = WaitForSingleObject( exitEvent, 200/*INFINITE*/ );
+      if( result == (WAIT_OBJECT_0) )
+      {
 			// leaving thread
 			break;
 		}
 	}
 
-	if(exitEvent) {
-		CloseHandle(exitEvent);
+	if( exitEvent ) {
+		CloseHandle( exitEvent );
 		exitEvent = NULL;
 	}
-
-	if(beginEvent) {
-		CloseHandle(beginEvent);
-		beginEvent = NULL;
-	}
-
 }
 
-void SendReceiveData::killThread() {
-
+void SendReceiveData::killThread()
+{
 	//
 	// need to kill thread here
 	//
-	if(exitEvent) {
-		SetEvent(exitEvent);
+	if( exitEvent ) {
+		SetEvent( exitEvent );
 	}
 
-	if(threadHandle!=NULL) {
-
+	if( threadHandle != NULL )
+   {
 		DWORD result = 0;
 
-		if(GetExitCodeThread(threadHandle,&result)==0) 
+		if( GetExitCodeThread( threadHandle, &result ) == 0 ) 
 		{
-			CloseHandle(threadHandle);
+			CloseHandle( threadHandle );
 			threadHandle = NULL;
 			return;
 		}
 
-		if(result==STILL_ACTIVE)
+		if( result==STILL_ACTIVE )
 		{
-         // walkaround for deadlock
-			WaitForSingleObject(threadHandle,5000);
-         TerminateThread(threadHandle, 0); 
-
-         //WaitForSingleObject(threadHandle,INFINITE);
-			CloseHandle(threadHandle);
+         WaitForSingleObject( threadHandle, INFINITE );
+			CloseHandle( threadHandle );
 			threadHandle = NULL;
 		}
 	}
 }
 
-void SendReceiveData::waitTillDataIsReady(int maxUSecs) {
-
-	HANDLE events[2]={dataReadyEvent,threadExitEvent};
+void SendReceiveData::waitTillDataIsReady( int maxUSecs )
+{
+	HANDLE events[2] = { dataReadyEvent, threadExitEvent };
 	int evt;
-	if(threadExitEvent==NULL) evt=1;
-	else evt=2;
+	if( threadExitEvent == NULL )
+      evt = 1;
+	else
+      evt = 2;
 
-	if(irCode==0)
+	if( irCode == 0 )
 	{
-		ResetEvent(dataReadyEvent);
+		ResetEvent( dataReadyEvent );
+
 		int res;
-		if(maxUSecs)
-			res=WaitForMultipleObjects(evt,events,FALSE,(maxUSecs+500)/1000);
+		if( maxUSecs )
+			res = WaitForMultipleObjects( evt, events, FALSE, ( maxUSecs + 500 ) / 1000 );
 		else
-			res=WaitForMultipleObjects(evt,events,FALSE,INFINITE);
-		if(res==(WAIT_OBJECT_0+1))
+			res = WaitForMultipleObjects( evt, events, FALSE, INFINITE );
+		if( res == (WAIT_OBJECT_0+1) )
 		{
-			ExitThread(0);
+			ExitThread( 0 );
 			return;
 		}
 	}
 
+}
+
+void SendReceiveData::getCode()
+{
+   irCode = BTV_GetRCCodeEx();
+
+   if( irCode && irCode == irLastCode && repeats <= 10 )
+      repeats++;
+   else
+      repeats = 0;
+
+   SetEvent( dataReadyEvent );
 }
 
 int SendReceiveData::decodeCommand(TCHAR *out) {
+   if( irCode == 0 )
+      return 0;
 
 	//==================
 	TCHAR buttonName[32];
@@ -206,10 +197,6 @@ int SendReceiveData::decodeCommand(TCHAR *out) {
    memset( &remoteName, 0, sizeof(TCHAR)*32 );
 
 	switch( irCode ) {
-      case 0:
-         irCode = 0;
-         return 0;
-
       // BEGIN AverMedia 407
       case 0x2FD00FF:
          _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
@@ -373,9 +360,9 @@ int SendReceiveData::decodeCommand(TCHAR *out) {
    if( remoteName[0] == 0 )
       _tcscpy_s( remoteName, _countof(remoteName), _T( "Unknown" ) );
    
-   _sntprintf_s( out, PACKET_SIZE+1, PACKET_SIZE+1, _T( "%016llx %02x %s %s\n" ), __int64(0), repeats, buttonName, remoteName );
-	
-   irLastCode	= irCode;
+   _sntprintf_s( out, PACKET_SIZE+1, PACKET_SIZE+1, _T( "%016llx %02x %s %s\n" ), __int64(0), repeats / 10, buttonName, remoteName );
+
+   irLastCode = irCode;
    irCode = 0;
 
 	return 1;
