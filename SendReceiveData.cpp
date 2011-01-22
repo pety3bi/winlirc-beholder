@@ -44,7 +44,32 @@ BOOL SendReceiveData::init() {
    irLastCode		= 0;
    repeats			= 0;
 
-   if( BTV_SelectCard( 0 ) ) {
+
+   if( !BTV_GetIStatus() ) {
+      MessageBox( 0, _T( "Library not found" ), _T( "Beholder" ), MB_OK | MB_ICONERROR );
+      return false;
+   }
+
+   /*
+   int status = BTV_GetIStatus();
+   switch( status ) {
+      case 0: // Library not found.
+         MessageBox( 0, _T( "Library not found" ), _T( "Beholder" ), MB_OK | MB_ICONERROR );
+         break;
+      case 1:	// WDM device not selected.
+         MessageBox( 0, _T( "WDM device not selected" ), _T( "Beholder" ), MB_OK | MB_ICONERROR );
+         break;
+      case 2:	// OK.
+         MessageBox( 0, _T( "OK" ), _T( "Beholder" ), MB_OK | MB_ICONERROR );
+         break;
+
+      default:
+         MessageBox( 0, _T( "default" ), _T( "Beholder" ), MB_OK | MB_ICONERROR );
+         break;
+   }
+   */
+
+   if( BTV_SelectCard() ) {
       threadHandle = CreateThread(NULL,0,BeholdRC,(void *)this,0,NULL);
       if(threadHandle) {
          return true;
