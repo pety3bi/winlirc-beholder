@@ -374,7 +374,7 @@ int SendReceiveData::decodeCommand(TCHAR *out) {
 	}
 
    if( buttonName[0] == 0 )
-      _snprintf_s( buttonName, _countof(buttonName), _T( "0x%X" ), irCode );
+      _sntprintf_s( buttonName, _countof(buttonName), _T( "0x%X" ), irCode );
 
    if( remoteName[0] == 0 )
       _tcscpy_s( remoteName, _countof(remoteName), _T( "Unknown" ) );
