@@ -157,9 +157,7 @@ void SendReceiveData::waitTillDataIsReady( int maxUSecs )
 
 	if(!dataReady())
 	{
-      //EnterCriticalSection(&criticalSection);
 		ResetEvent( dataReadyEvent );
-      //LeaveCriticalSection(&criticalSection);
 
 		int res;
 		if( maxUSecs )
@@ -207,8 +205,6 @@ void SendReceiveData::getCode()
       LeaveCriticalSection(&criticalSection);
 
 		SetEvent( dataReadyEvent );
-
-      //LeaveCriticalSection(&criticalSection);
 	}	
 }
 
@@ -219,8 +215,6 @@ int SendReceiveData::dataReady()
 	//=========
 
 	result = WaitForSingleObject( dataReadyEvent, 0 );
-   printf( "%d\n", result );
-
 	if(result==WAIT_OBJECT_0)
       return 1;
 	
