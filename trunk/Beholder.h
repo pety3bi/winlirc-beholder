@@ -31,7 +31,7 @@
 #include "Globals.h"
 
 //
-// TIRA API
+// Beholder API
 //
 #define IG_API __declspec(dllexport)
 
@@ -44,7 +44,9 @@ IG_API void	deinit();
 IG_API int	hasGui();
 IG_API void	loadSetupGui();
 IG_API int	sendIR( struct ir_remote *remote, struct ir_ncode *code, int repeats );
-IG_API int	decodeIR( struct ir_remote *remotes, TCHAR *out );
+IG_API int	decodeIR( struct ir_remote *remotes, char *out );
+
+IG_API struct hardware* getHardware();	// for irrecord
 
 #ifdef __cplusplus
 }

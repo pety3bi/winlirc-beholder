@@ -28,13 +28,10 @@ DWORD WINAPI BeholdRC(void *recieveClass)
    return 0;
 }
 
-SendReceiveData::SendReceiveData() :
-   irCode(),
-   irLastCode(),
-   repeats(),
-   threadHandle(),
-   exitEvent()
+SendReceiveData::SendReceiveData()
 {
+	threadHandle = NULL;
+	exitEvent = NULL;
 }
 
 
@@ -45,14 +42,16 @@ SendReceiveData::~SendReceiveData()
 
 BOOL SendReceiveData::init()
 {
-   irCode			= 0;
-   irLastCode		= 0;
-   repeats			= 0;
+	
+	threadHandle = NULL;
+	exitEvent = NULL;
 
-   if( !BTV_GetIStatus() ) {
-      MessageBox( 0, _T( "Library not found" ), _T( "Beholder" ), MB_OK | MB_ICONERROR );
-      return false;
-   }
+	gettimeofday(&end,NULL);	// initialise
+
+	if( !BTV_GetIStatus() ) {
+		MessageBox( 0, _T( "Library not found" ), _T( "Beholder" ), MB_OK | MB_ICONERROR );
+		return false;
+	}
 
    /*
    int status = BTV_GetIStatus();
@@ -93,18 +92,19 @@ void SendReceiveData::deinit()
 void SendReceiveData::threadProc()
 {
 	exitEvent = CreateEvent( NULL, TRUE, FALSE, NULL );
-   if( !exitEvent )
-      return;
 
-   DWORD result = 0;
+	if( !exitEvent )
+		return;
+
+	DWORD result = 0;
 
 	while( TRUE ) {
-      this->getCode();
 
-      //result = WaitForMultipleObjects( 2, events, FALSE, INFINITE );
-      result = WaitForSingleObject( exitEvent, 200/*INFINITE*/ );
-      if( result == (WAIT_OBJECT_0) )
-      {
+		getCode();
+
+		result = WaitForSingleObject( exitEvent, 20 );
+		if( result == (WAIT_OBJECT_0) )
+		{
 			// leaving thread
 			break;
 		}
@@ -138,10 +138,11 @@ void SendReceiveData::killThread()
 
 		if( result==STILL_ACTIVE )
 		{
-         WaitForSingleObject( threadHandle, INFINITE );
-			CloseHandle( threadHandle );
-			threadHandle = NULL;
+			WaitForSingleObject( threadHandle, INFINITE );
 		}
+
+		CloseHandle( threadHandle );
+		threadHandle = NULL;
 	}
 }
 
@@ -154,9 +155,11 @@ void SendReceiveData::waitTillDataIsReady( int maxUSecs )
 	else
       evt = 2;
 
-	if( irCode == 0 )
+	if(!dataReady())
 	{
+      //EnterCriticalSection(&criticalSection);
 		ResetEvent( dataReadyEvent );
+      //LeaveCriticalSection(&criticalSection);
 
 		int res;
 		if( maxUSecs )
@@ -169,201 +172,57 @@ void SendReceiveData::waitTillDataIsReady( int maxUSecs )
 			return;
 		}
 	}
-
 }
 
 void SendReceiveData::getCode()
 {
-   irCode = BTV_GetRCCodeEx();
+	//========================
+	ir_code tempCode;
+	struct mytimeval tempStart;
+	struct mytimeval tempEnd;
+	struct mytimeval tempLast;
+	//========================
 
-   if( irCode && irCode == irLastCode && repeats <= 10 )
-      repeats++;
-   else
-      repeats = 0;
+	//
+	// get code see if its valid because we are polling
+	// 99% of the time it will just return zero
+	//
 
-   SetEvent( dataReadyEvent );
+	gettimeofday(&tempStart,NULL);
+	tempLast = end;
+
+	tempCode = BTV_GetRCCodeEx();
+
+	gettimeofday(&tempEnd,NULL);
+
+	if(tempCode) {
+
+		EnterCriticalSection(&criticalSection);
+			start	= tempStart;
+			last	= tempLast;
+			end		= tempEnd;
+			irCode	= tempCode;
+
+      //printf("ir code %I64d\n",irCode);
+      LeaveCriticalSection(&criticalSection);
+
+		SetEvent( dataReadyEvent );
+
+      //LeaveCriticalSection(&criticalSection);
+	}	
 }
 
-int SendReceiveData::decodeCommand(TCHAR *out) {
-   if( irCode == 0 )
-      return 0;
+int SendReceiveData::dataReady()
+{
+	//=========
+	int result;
+	//=========
 
-	//==================
-	TCHAR buttonName[32];
-   TCHAR remoteName[32];
-	//==================
+	result = WaitForSingleObject( dataReadyEvent, 0 );
+   printf( "%d\n", result );
 
-   memset( &buttonName, 0, sizeof(TCHAR)*32 );
-   memset( &remoteName, 0, sizeof(TCHAR)*32 );
-
-	switch( irCode ) {
-      // BEGIN AverMedia 407
-      case 0x2FD00FF:
-         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
-         _tcscpy_s( buttonName, _countof(buttonName), _T( "POWER" ) );
-         break;
-
-      case 0x2FD01FE:
-         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
-         _tcscpy_s( buttonName, _countof(buttonName), _T( "TV/FM" ) );
-         break;
-      case 0x2FD02FD:
-         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
-         _tcscpy_s( buttonName, _countof(buttonName), _T( "CD" ) );
-         break;
-      case 0x2FD03FC:
-         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
-         _tcscpy_s( buttonName, _countof(buttonName), _T( "TELETEXT" ) );
-         break;
-
-      case 50136570:
-         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
-         _tcscpy_s( buttonName, _countof(buttonName), _T( "1 ") );
-         break;
-      case 50136825:
-         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
-         _tcscpy_s( buttonName, _countof(buttonName), _T( "2" ) );
-         break;
-      case 50137080:
-         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
-         _tcscpy_s( buttonName, _countof(buttonName), _T( "3" ) );
-         break;
-      case 50137590:
-         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
-         _tcscpy_s( buttonName, _countof(buttonName), _T( "4" ) );
-         break;
-      case 50137845:
-         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
-         _tcscpy_s( buttonName, _countof(buttonName), _T( "5" ) );
-         break;
-      case 50138100:
-         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
-         _tcscpy_s( buttonName, _countof(buttonName), _T( "6" ) );
-         break;
-      case 50138610:
-         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
-         _tcscpy_s( buttonName, _countof(buttonName), _T( "7" ) );
-         break;
-      case 50138865:
-         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
-         _tcscpy_s( buttonName, _countof(buttonName), _T( "8" ) );
-         break;
-      case 50139120:
-         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
-         _tcscpy_s( buttonName, _countof(buttonName), _T( "9" ) );
-         break;
-      case 50139630:
-         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
-         _tcscpy_s( buttonName, _countof(buttonName), _T( "0" ) );
-         break;
-
-      case 50136315:
-         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
-         _tcscpy_s( buttonName, _countof(buttonName), _T( "VIDEO" ) );
-         break;
-      case 50137335:
-         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
-         _tcscpy_s( buttonName, _countof(buttonName), _T( "AUDIO" ) );
-         break;
-      case 50138355:
-         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
-         _tcscpy_s( buttonName, _countof(buttonName), _T( "SCREEN" ) );
-         break;
-
-      case 50139885:
-         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
-         _tcscpy_s( buttonName, _countof(buttonName), _T( "DISPLAY" ) );
-         break;
-      case 50140140:
-         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
-         _tcscpy_s( buttonName, _countof(buttonName), _T( "LOOP" ) );
-         break;
-      case 50139375:
-         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
-         _tcscpy_s( buttonName, _countof(buttonName), _T( "PREVIEW" ) );
-         break;
-      case 50140650:
-         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
-         _tcscpy_s( buttonName, _countof(buttonName), _T( "AUTOSCAN" ) );
-         break;
-      case 50140905:
-         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
-         _tcscpy_s( buttonName, _countof(buttonName), _T( "FREEZE" ) );
-         break;
-      case 50141160:
-         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
-         _tcscpy_s( buttonName, _countof(buttonName), _T( "CAPTURE" ) );
-         break;
-      case 50140395:
-         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
-         _tcscpy_s( buttonName, _countof(buttonName), _T( "MUTE" ) );
-         break;
-      case 50141670:
-         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
-         _tcscpy_s( buttonName, _countof(buttonName), _T( "RECORD" ) );
-         break;
-      case 50141925:
-         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
-         _tcscpy_s( buttonName, _countof(buttonName), _T( "PAUSE" ) );
-         break;
-      case 50142180:
-         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
-         _tcscpy_s( buttonName, _countof(buttonName), _T( "STOP" ) );
-         break;
-      case 50141415:
-         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
-         _tcscpy_s( buttonName, _countof(buttonName), _T( "PLAY" ) );
-         break;
-
-      case 0x2FD1EE1:
-         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
-         _tcscpy_s( buttonName, _countof(buttonName), _T( "VOL_DOWN" ) );
-         break;
-
-      case 0x2FD1FE0:
-         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
-         _tcscpy_s( buttonName, _countof(buttonName), _T( "VOL_UP" ) );
-         break;
-
-      case 0x3FC02FD:
-         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
-         _tcscpy_s( buttonName, _countof(buttonName), _T( "CHANNEL_DOWN" ) );
-         break;
-      case 0x3FC03FC:
-         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
-         _tcscpy_s( buttonName, _countof(buttonName), _T( "CHANNEL_UP" ) );
-         break;
-
-      case 50142690:
-         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
-         _tcscpy_s( buttonName, _countof(buttonName), _T( "RED" ) );
-         break;
-      case 50142435:
-         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
-         _tcscpy_s( buttonName, _countof(buttonName), _T( "YELLOW" ) );
-         break;
-      case 66847230:
-         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
-         _tcscpy_s( buttonName, _countof(buttonName), _T( "GREEN" ) );
-         break;
-      case 66846975:
-         _tcscpy_s( remoteName, _countof(remoteName), _T( "AverMedia" ) );
-         _tcscpy_s( buttonName, _countof(buttonName), _T( "BLUE" ) );
-         break;
-
-      // END AverMedia 407
-	}
-
-   if( buttonName[0] == 0 )
-      _sntprintf_s( buttonName, _countof(buttonName), _T( "0x%X" ), irCode );
-
-   if( remoteName[0] == 0 )
-      _tcscpy_s( remoteName, _countof(remoteName), _T( "Unknown" ) );
-   
-   _sntprintf_s( out, PACKET_SIZE+1, PACKET_SIZE+1, _T( "%016llx %02x %s %s\n" ), __int64(0), repeats / 10, buttonName, remoteName );
-
-   irLastCode = irCode;
-   irCode = 0;
-
-	return 1;
+	if(result==WAIT_OBJECT_0)
+      return 1;
+	
+	return 0;
 }
