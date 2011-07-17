@@ -32,7 +32,7 @@ IG_API int init( HANDLE exitEvent )
     InitializeCriticalSection(&criticalSection);
 
     threadExitEvent = exitEvent;
-    dataReadyEvent    = CreateEvent( NULL, TRUE, FALSE, NULL );
+    dataReadyEvent  = CreateEvent( NULL, TRUE, FALSE, NULL );
 
     sendReceiveData = new SendReceiveData();
 

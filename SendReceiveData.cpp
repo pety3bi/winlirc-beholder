@@ -72,6 +72,7 @@ BOOL SendReceiveData::init()
    }
    */
 
+   // @TODO need to get valid idx for multiple cards support
    if( BTV_SelectCard() ) {
       threadHandle = CreateThread( NULL, 0, BeholdRC, (void *)this, 0, NULL );
       if( threadHandle ) {
