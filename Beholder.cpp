@@ -20,17 +20,27 @@
  */
 
 #include "Beholder.h"
+#include "Globals.h"
+#include <Windows.h>
+#include "hardware.h"
+#include "decode.h"
 
 IG_API int init( HANDLE exitEvent )
 {
-	sendReceiveData = new SendReceiveData();
-	if( !sendReceiveData->init() )
+    initHardwareStruct();
+
+    InitializeCriticalSection(&criticalSection);
+
+    threadExitEvent = exitEvent;
+    dataReadyEvent    = CreateEvent( NULL, TRUE, FALSE, NULL );
+
+    sendReceiveData = new SendReceiveData();
+
+    if( !sendReceiveData->init() ) {
       return 0;
+    }
 
-	threadExitEvent = exitEvent;
-	dataReadyEvent	= CreateEvent( NULL, FALSE, FALSE, NULL );
-
-	return 1;
+    return 1;
 }
 
 IG_API void deinit()
@@ -45,6 +55,8 @@ IG_API void deinit()
 		CloseHandle( dataReadyEvent );
 		dataReadyEvent = NULL;
 	}
+
+	DeleteCriticalSection(&criticalSection);
 
 	threadExitEvent = NULL;
 }
@@ -64,12 +76,22 @@ IG_API int sendIR( struct ir_remote *remote, struct ir_ncode *code, int repeats 
 	return 0;
 }
 
-IG_API int decodeIR( struct ir_remote *remotes, TCHAR *out )
+IG_API int decodeIR( struct ir_remote *remotes, char *out )
 {
 	if(sendReceiveData) {
+
 		sendReceiveData->waitTillDataIsReady( 0 );
-	   return sendReceiveData->decodeCommand( out );
+	   	
+		if(decodeCommand(remotes,out)) {
+			return 1;
+		}
 	}
 
 	return 0;
+}
+
+IG_API struct hardware* getHardware() {
+
+	initHardwareStruct();
+	return &hw;
 }

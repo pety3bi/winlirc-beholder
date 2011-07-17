@@ -16,39 +16,18 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * Copyright (C) 2011 Artem Golubev
+ * Copyright (C) 2010 Ian Curtis
  */
 
-#ifndef RECEIVEDATA_H
-#define RECEIVEDATA_H
+#ifndef DECODE_H
+#define DECODE_H
 
-#include <windows.h>
-#include <tchar.h>
-#include <cstdio>
+void init_rec_buffer(void);
+bool decodeCommand(struct ir_remote *remotes, char *out);
 
-#include "LIRCDefines.h"
-
-#include "BeholdRC.h"
-
-class SendReceiveData
-{
-public:
-	SendReceiveData();
-   ~SendReceiveData();
-
-	BOOL   init();
-	void   deinit();
-
-	int		dataReady();
-	void	waitTillDataIsReady( int maxUSecs );
-	void	threadProc();
-
-private:
-	void	killThread();
-	void	getCode(); // @TODO
-
-	HANDLE	threadHandle;
-	HANDLE	exitEvent;
-};
+int beholder_decode(struct ir_remote *remote,
+		   ir_code *prep,ir_code *codep,ir_code *postp,
+		   int *repeat_flagp,
+		   lirc_t *min_remaining_gapp, lirc_t *max_remaining_gapp);
 
 #endif

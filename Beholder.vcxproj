@@ -38,7 +38,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)$(Configuration)\plugins</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
@@ -86,13 +86,17 @@
   <ItemGroup>
     <ClCompile Include="Beholder.cpp" />
     <ClCompile Include="BeholdRC.cpp" />
+    <ClCompile Include="Decode.cpp" />
     <ClCompile Include="Globals.cpp" />
+    <ClCompile Include="hardware.cpp" />
     <ClCompile Include="SendReceiveData.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Beholder.h" />
     <ClInclude Include="BeholdRC.h" />
+    <ClInclude Include="Decode.h" />
     <ClInclude Include="Globals.h" />
+    <ClInclude Include="hardware.h" />
     <ClInclude Include="LIRCDefines.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SendReceiveData.h" />

@@ -27,6 +27,12 @@
     <ClCompile Include="BeholdRC.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Decode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="hardware.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Beholder.h">
@@ -45,6 +51,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SendReceiveData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Decode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="hardware.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
