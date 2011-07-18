@@ -103,7 +103,7 @@ void SendReceiveData::threadProc()
 
 		getCode();
 
-		result = WaitForSingleObject( exitEvent, 20 );
+		result = WaitForSingleObject( exitEvent, 40 ); // The optimal poll interval is 30-50ms.
 		if( result == (WAIT_OBJECT_0) )
 		{
 			// leaving thread
