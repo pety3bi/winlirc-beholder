@@ -28,10 +28,10 @@ DWORD WINAPI BeholdRC(void *recieveClass)
    return 0;
 }
 
-SendReceiveData::SendReceiveData()
+SendReceiveData::SendReceiveData() :
+	threadHandle( NULL ),
+	exitEvent   ( NULL )
 {
-	threadHandle = NULL;
-	exitEvent = NULL;
 }
 
 
@@ -42,7 +42,6 @@ SendReceiveData::~SendReceiveData()
 
 BOOL SendReceiveData::init()
 {
-	
 	threadHandle = NULL;
 	exitEvent = NULL;
 
@@ -89,7 +88,6 @@ void SendReceiveData::deinit()
    killThread();
 }
 
-
 void SendReceiveData::threadProc()
 {
 	exitEvent = CreateEvent( NULL, TRUE, FALSE, NULL );
@@ -99,8 +97,8 @@ void SendReceiveData::threadProc()
 
 	DWORD result = 0;
 
-	while( TRUE ) {
-
+	while( TRUE )
+   {
 		getCode();
 
 		result = WaitForSingleObject( exitEvent, 40 ); // The optimal poll interval is 30-50ms.
@@ -111,7 +109,8 @@ void SendReceiveData::threadProc()
 		}
 	}
 
-	if( exitEvent ) {
+	if( exitEvent )
+   {
 		CloseHandle( exitEvent );
 		exitEvent = NULL;
 	}
@@ -122,7 +121,8 @@ void SendReceiveData::killThread()
 	//
 	// need to kill thread here
 	//
-	if( exitEvent ) {
+	if( exitEvent )
+   {
 		SetEvent( exitEvent );
 	}
 

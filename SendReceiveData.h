@@ -36,16 +36,16 @@ public:
 	SendReceiveData();
    ~SendReceiveData();
 
-	BOOL   init();
-	void   deinit();
+	BOOL  init();
+	void  deinit();
 
-	int		dataReady();
-	void	waitTillDataIsReady( int maxUSecs );
-	void	threadProc();
+	int   dataReady();
+	void  waitTillDataIsReady( int maxUSecs );
+	void  threadProc();
 
 private:
-	void	killThread();
-	void	getCode(); // @TODO
+	void  killThread();
+	void  getCode();
 
 	HANDLE	threadHandle;
 	HANDLE	exitEvent;
