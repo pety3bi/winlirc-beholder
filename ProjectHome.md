@@ -1,0 +1,1 @@
+WinLIRC input plugin for Beholder TV Tuners
